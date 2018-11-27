@@ -1,6 +1,6 @@
 using System;
 
-namespace Vehicle_Search_Sample.Models
+namespace UI.MVCWeb.ViewModels
 {
     public class ErrorViewModel
     {

@@ -1,7 +1,18 @@
-﻿
-@{
-    ViewData["Title"] = "Index";
-}
+@model IndexViewModel
+<h2>Simple search page</h2>
 
-<h2>Index</h2>
-
+<div class="col-md-3">
+    <p>Price:</p>
+    <p>From:</p>
+    <p>To:</p>
+    <select asp-items="Model.Manufacturers"></select>
+</div>
+<div class="col-md-9">
+    @foreach (var result in Model.Results)
+    {
+        <div>
+            <h6>&pound;@result.Cost</h6>
+            <p>@result.Description</p>
+        </div>
+    }
+</div>

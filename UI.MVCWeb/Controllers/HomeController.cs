@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using Vehicle_Search_Sample.Models;
+using UI.MVCWeb.ViewModels;
 
 namespace Vehicle_Search_Sample.Controllers
 {

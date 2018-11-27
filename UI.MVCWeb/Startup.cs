@@ -1,7 +1,12 @@
+using AutoMapper;
+using Core;
+using DataStore;
+using InMemorySearch;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,26 +21,28 @@ namespace Vehicle_Search_Sample
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            //services.AddLogging( logger =>
-            //{
-            //    logger.Services.addcon
-            //})
-
-
+            services.AddDbContext<VehicleContext>(options => options.UseInMemoryDatabase("Vehicles"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddTransient<ISearchService, EntityFrameworkSearch>();
+            IMapper mapper = new MapperConfiguration(config =>
+            {
+                config.AddProfiles(GetType().Assembly);
+            })
+            .CreateMapper();
+
+            services.AddSingleton(mapper);
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
