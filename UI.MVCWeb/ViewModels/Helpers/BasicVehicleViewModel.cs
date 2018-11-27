@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace UI.MVCWeb.ViewModels.Helpers
 {
     public class BasicVehicleViewModel
@@ -11,5 +6,6 @@ namespace UI.MVCWeb.ViewModels.Helpers
         public string Model { get; set;}
         public decimal Cost { get; set; }
         public string Description { get; set; }
+        public decimal Millage { get; set; }
     }
 }

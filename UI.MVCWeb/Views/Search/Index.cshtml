@@ -1,18 +1,30 @@
 @model IndexViewModel
 <h2>Simple search page</h2>
 
-<div class="col-md-3">
-    <p>Price:</p>
-    <p>From:</p>
-    <p>To:</p>
-    <select asp-items="Model.Manufacturers"></select>
-</div>
+<form asp-controller="Search" asp-action="Index" method="post">
+    <div class="col-md-3">
+        <div class="row">
+            <select asp-items="Model.Manufacturers" asp-for="SelectedManufacturerID"><option value="">Please Select...</option></select>
+            @if (Model.Models != null && Model.Models.Any())
+            {
+                <select asp-items="Model.Models" asp-for="SelectedModelID"><option value="">Please Select...</option></select>
+            }
+        </div>
+        <div class="row">
+            <button type="submit" value="search">Search</button>
+        </div>
+    </div>
+</form>
 <div class="col-md-9">
     @foreach (var result in Model.Results)
     {
-        <div>
+        <div class="col-md-2">
             <h6>&pound;@result.Cost</h6>
+            <img src="https://via.placeholder.com/140x100" />
             <p>@result.Description</p>
+            <ul>
+                <li>@result.Millage</li>
+            </ul>
         </div>
     }
 </div>

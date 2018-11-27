@@ -17,9 +17,23 @@ namespace InMemorySearch
             this.dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Vehicle>> Search()
+        public async Task<IEnumerable<Vehicle>> Search() =>
+            await Search(SearchFilterOptions.None);
+
+        public async Task<IEnumerable<Vehicle>> Search(SearchFilterOptions filterOptions)
         {
-            return (await dbContext.Vehicles.ToListAsync()).Cast<Vehicle>();
+            IQueryable<Vehicle> vehicles = dbContext.Vehicles;
+
+            if (filterOptions.ModelID.HasValue)
+            {
+                vehicles = vehicles.Where(vehicle => vehicle.ModelID == filterOptions.ModelID);
+            }
+            else if (filterOptions.ManufacturerID.HasValue)
+            {
+                vehicles = vehicles.Where(vehicle => vehicle.Model.ManufacturerID == filterOptions.ManufacturerID);
+            }
+
+            return await vehicles.ToListAsync();
         }
     }
 }

@@ -8,5 +8,8 @@ namespace UI.MVCWeb.ViewModels.Search
     {
         public IEnumerable<BasicVehicleViewModel> Results { get; set; }
         public IEnumerable<SelectListItem> Manufacturers { get; set; }
+        public int SelectedManufacturerID { get; set; }
+        public IEnumerable<SelectListItem> Models { get; set; }
+        public int SelectedModelID { get; set; }
     }
 }
