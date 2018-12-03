@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using UI.MVCWeb.Mappings;
 
 namespace Vehicle_Search_Sample
 {
@@ -33,14 +34,14 @@ namespace Vehicle_Search_Sample
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddTransient<ISearchService, EntityFrameworkSearch>();
+            services.AddTransient<IMappingService, AutoMapperMappingService>();
             IMapper mapper = new MapperConfiguration(config =>
             {
-                config.AddProfiles(GetType().Assembly);
+                config.AddProfiles(typeof(AutoMapperMappingService).Assembly);
             })
             .CreateMapper();
 
             services.AddSingleton(mapper);
-
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

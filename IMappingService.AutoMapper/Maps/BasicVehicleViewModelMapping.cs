@@ -1,6 +1,6 @@
 using AutoMapper;
 using Core.Models;
-using UI.MVCWeb.ViewModels.Helpers;
+using Web.ViewModels.Helpers;
 
 namespace UI.MVCWeb.Mappings
 {
@@ -13,6 +13,7 @@ namespace UI.MVCWeb.Mappings
             map.ForMember(dest => dest.Model, opt => opt.MapFrom(source => source.Model.Name));
             map.ForMember(dest => dest.Cost, opt => opt.MapFrom(source => source.RetailPrice));
             map.ForMember(dest => dest.Millage, opt => opt.MapFrom(source => source.Millage));
+            map.ForAllOtherMembers(opt => opt.Ignore());
         }
     }
 }

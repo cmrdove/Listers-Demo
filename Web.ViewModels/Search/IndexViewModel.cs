@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
-using UI.MVCWeb.ViewModels.Helpers;
+using Web.ViewModels.Helpers;
 
-namespace UI.MVCWeb.ViewModels.Search
+namespace Web.ViewModels.Search
 {
     public class IndexViewModel
     {

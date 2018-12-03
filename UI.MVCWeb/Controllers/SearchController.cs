@@ -1,4 +1,3 @@
-using AutoMapper;
 using Core;
 using Core.Models;
 using DataStore;
@@ -6,31 +5,32 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UI.MVCWeb.ViewModels.Search;
+using Web.ViewModels.Search;
 
 namespace UI.MVCWeb.Controllers
 {
     public class SearchController : Controller
     {
         private readonly ISearchService searchService;
-        private readonly IMapper mapper;
         private readonly VehicleContext vehicleContext;
+        private readonly IMappingService mappingService;
 
-        public SearchController(ISearchService searchService, IMapper mapper, VehicleContext vehicleContext)
+        public SearchController(ISearchService searchService, IMappingService mappingService, VehicleContext vehicleContext)
         {
             this.searchService = searchService;
-            this.mapper = mapper;
+            this.mappingService = mappingService;
             this.vehicleContext = vehicleContext;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            IndexViewModel viewModel = new IndexViewModel();
             Task<IEnumerable<Vehicle>> resultsTask = searchService.Search();
-            IAsyncEnumerable<Manufacturer> manufacturersTask = vehicleContext.Manufacturers.ToAsyncEnumerable();
+            Task<List<Manufacturer>> manufacturersTask = vehicleContext.Manufacturers.ToAsyncEnumerable().ToList();
 
-            IndexViewModel viewModel = mapper.Map<IndexViewModel>(await resultsTask);
-            mapper.Map(await manufacturersTask.ToList(), viewModel);
+            await Task.WhenAll(resultsTask, manufacturersTask);
+            await mappingService.Map(viewModel, resultsTask.Result, manufacturersTask.Result);
 
             return View(viewModel);
         }
@@ -38,10 +38,10 @@ namespace UI.MVCWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(IndexViewModel viewModel)
         {
-            IAsyncEnumerable<Model> modelsTask = new List<Model>().ToAsyncEnumerable();
+            Task<List<Model>> modelsTask = new List<Model>().ToAsyncEnumerable().ToList();
             SearchFilterOptions searchFilterOptions = new SearchFilterOptions();
 
-            IAsyncEnumerable<Manufacturer> manufacturersTask = vehicleContext.Manufacturers.ToAsyncEnumerable();
+            Task<List<Manufacturer>> manufacturersTask = vehicleContext.Manufacturers.ToAsyncEnumerable().ToList();
 
             if (viewModel.SelectedModelID > 0)
             {
@@ -49,14 +49,14 @@ namespace UI.MVCWeb.Controllers
             }
             if (viewModel.SelectedManufacturerID > 0)
             {
-                modelsTask = vehicleContext.Models.Where(model => model.ManufacturerID == viewModel.SelectedManufacturerID).ToAsyncEnumerable();
+                modelsTask = vehicleContext.Models.Where(model => model.ManufacturerID == viewModel.SelectedManufacturerID).ToAsyncEnumerable().ToList();
                 searchFilterOptions.ManufacturerID = viewModel.SelectedManufacturerID;
             }
 
             Task<IEnumerable<Vehicle>> resultsTask = searchService.Search(searchFilterOptions);
-            mapper.Map(await resultsTask, viewModel);
-            mapper.Map(await manufacturersTask.ToList(), viewModel);
-            mapper.Map(await modelsTask.ToList(), viewModel);
+
+            await Task.WhenAll(resultsTask, manufacturersTask, modelsTask);
+            await mappingService.Map(viewModel, resultsTask.Result, manufacturersTask.Result, modelsTask.Result);
 
             return View(viewModel);
         }
